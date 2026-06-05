@@ -1,1 +1,84 @@
-# -
+# PWA 一键唤醒与隐藏
+
+这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 做“一键唤醒与隐藏”。
+
+当前内置两个应用：
+
+- Google Gemini
+- ChatGPT中文
+
+## 默认热键
+
+- `Ctrl + Alt + G`：Google Gemini
+- `Ctrl + Alt + C`：ChatGPT中文
+- `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
+
+每个应用的行为都是：
+
+- 如果窗口已经在前台：隐藏窗口
+- 如果窗口在后台或已被隐藏：显示并激活窗口
+- 如果窗口还没打开：启动 PWA 快捷方式
+
+## 使用前准备
+
+1. 安装 [AutoHotkey v2](https://www.autohotkey.com/)。
+2. 在 Chrome、Edge 或其他浏览器中把 Gemini 和 ChatGPT 安装为 PWA。
+3. 双击运行 `pwa-toggle.ahk`。
+
+## 如果打开成普通浏览器标签页
+
+脚本会自动寻找常见位置里的 PWA 快捷方式。如果它没有找到，就会退回到网页 URL，因此可能打开普通浏览器标签页。
+
+这时请打开 `pwa-toggle.ahk`，把 PWA 快捷方式路径填到顶部：
+
+```ahk
+geminiLaunchPath := ""
+chatgptLaunchPath := ""
+```
+
+示例：
+
+```ahk
+geminiLaunchPath := "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
+chatgptLaunchPath := "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\ChatGPT中文.lnk"
+```
+
+获取快捷方式路径的方法：
+
+1. 在开始菜单或桌面找到 PWA 图标。
+2. 右键图标，选择“打开文件所在的位置”。
+3. 复制对应 `.lnk` 文件的完整路径。
+
+## 修改热键
+
+热键在脚本顶部这两行：
+
+```ahk
+apps.Push(App("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath))
+apps.Push(App("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath))
+```
+
+AutoHotkey 热键符号：
+
+- `^` 表示 `Ctrl`
+- `!` 表示 `Alt`
+- `#` 表示 `Win`
+- `+` 表示 `Shift`
+
+例如 `^!g` 就是 `Ctrl + Alt + G`。
+
+## 开机自动运行
+
+按 `Win + R`，输入：
+
+```text
+shell:startup
+```
+
+把 `pwa-toggle.ahk` 的快捷方式放到打开的文件夹里。
+
+## 说明
+
+这个脚本使用窗口标题和浏览器进程名来识别 PWA 窗口，支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名。
+
+如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。
