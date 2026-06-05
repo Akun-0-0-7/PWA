@@ -7,6 +7,7 @@
 DetectHiddenWindows(true)
 SetTitleMatchMode(2)
 SetWorkingDir(A_ScriptDir)
+Persistent(true)
 
 ; Optional: paste the exact PWA shortcut path here if auto-detection opens a normal browser tab.
 ; Example: "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
@@ -14,8 +15,8 @@ geminiLaunchPath := ""
 chatgptLaunchPath := ""
 
 apps := []
-apps.Push(App("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath))
-apps.Push(App("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath))
+apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath))
+apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath))
 
 HiddenWindows := Map()
 
@@ -29,7 +30,7 @@ OnExit(ShowHiddenBeforeExit)
 
 return
 
-App(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "") {
+MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "") {
     return {
         name: name,
         hotkey: hotkey,
