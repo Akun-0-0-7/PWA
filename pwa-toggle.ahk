@@ -74,7 +74,7 @@ ToggleApp(app, *) {
     hwnd := FindAppWindow(app)
     if hwnd {
         target := "ahk_id " hwnd
-        if WinActive(target) {
+        if WinActive(target) && IsWindowVisible(hwnd) {
             WinHide(target)
             HiddenWindows[hwnd] := true
             return
