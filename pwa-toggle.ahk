@@ -198,7 +198,7 @@ TitleMatchesApp(hwnd, app) {
 
 IsActiveApp(app) {
     activeHwnd := WinExist("A")
-    return activeHwnd && IsAppCandidate(activeHwnd, app) && TitleMatchesApp(activeHwnd, app)
+    return activeHwnd && IsWindowVisible(activeHwnd) && IsAppCandidate(activeHwnd, app) && TitleMatchesApp(activeHwnd, app)
 }
 
 RunApp(app) {
