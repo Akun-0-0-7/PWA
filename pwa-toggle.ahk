@@ -32,7 +32,7 @@ OnExit(ShowHiddenBeforeExit)
 
 return
 
-MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", processNames := "", minimizeOnActive := false) {
+MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", processNames := "", closeToTray := false) {
     if processNames = "" {
         processNames := BrowserProcessNames()
     }
@@ -45,7 +45,7 @@ MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", proc
         fallbackUrl: fallbackUrl,
         launchPath: launchPath,
         processNames: processNames,
-        minimizeOnActive: minimizeOnActive
+        closeToTray: closeToTray
     }
 }
 
@@ -66,26 +66,14 @@ BrowserProcessNames() {
 ToggleApp(app, *) {
     global HiddenWindows
 
+    if app.closeToTray {
+        ToggleCloseToTrayApp(app)
+        return
+    }
+
     hwnd := FindAppWindow(app)
     if hwnd {
         target := "ahk_id " hwnd
-        if app.minimizeOnActive {
-            if IsActiveApp(app) {
-                for _, appHwnd in FindAppWindows(app) {
-                    try WinMinimize("ahk_id " appHwnd)
-                }
-                return
-            }
-
-            for _, appHwnd in FindAppWindows(app) {
-                appTarget := "ahk_id " appHwnd
-                try WinShow(appTarget)
-                try WinRestore(appTarget)
-            }
-            WinActivate(target)
-            return
-        }
-
         if WinActive(target) {
             WinHide(target)
             HiddenWindows[hwnd] := true
@@ -103,6 +91,32 @@ ToggleApp(app, *) {
     }
 
     RunApp(app)
+}
+
+ToggleCloseToTrayApp(app) {
+    if IsActiveApp(app) {
+        activeHwnd := WinExist("A")
+        SendCloseButton(activeHwnd)
+        return
+    }
+
+    hwnd := FindVisibleAppWindow(app)
+    if hwnd {
+        ActivateWindow(hwnd)
+        return
+    }
+
+    launchTarget := ResolveLaunchTarget(app)
+    if launchTarget != "" {
+        RunTarget(launchTarget)
+        hwnd := WaitForVisibleAppWindow(app, 10000)
+        if hwnd {
+            ActivateWindow(hwnd)
+        }
+        return
+    }
+
+    MsgBox("No launcher was found for " app.name ". Edit launchPath in this script.")
 }
 
 FindAppWindow(app) {
@@ -144,6 +158,16 @@ FindAppWindows(app) {
     }
 
     return matches
+}
+
+FindVisibleAppWindow(app) {
+    for _, hwnd in FindAppWindows(app) {
+        if IsWindowVisible(hwnd) {
+            return hwnd
+        }
+    }
+
+    return 0
 }
 
 IsAppCandidate(hwnd, app) {
@@ -285,6 +309,35 @@ WaitForAppWindow(app, timeoutMs) {
     }
 
     return 0
+}
+
+WaitForVisibleAppWindow(app, timeoutMs) {
+    startedAt := A_TickCount
+
+    while A_TickCount - startedAt < timeoutMs {
+        hwnd := FindVisibleAppWindow(app)
+        if hwnd {
+            return hwnd
+        }
+        Sleep(150)
+    }
+
+    return 0
+}
+
+ActivateWindow(hwnd) {
+    target := "ahk_id " hwnd
+    try WinShow(target)
+    try WinRestore(target)
+    WinActivate(target)
+}
+
+SendCloseButton(hwnd) {
+    DllCall("PostMessage", "Ptr", hwnd, "UInt", 0x112, "Ptr", 0xF060, "Ptr", 0)
+}
+
+IsWindowVisible(hwnd) {
+    return DllCall("IsWindowVisible", "Ptr", hwnd, "Int")
 }
 
 ShowAllApps(*) {

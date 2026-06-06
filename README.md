@@ -23,9 +23,9 @@ Gemini 和 ChatGPT 的行为：
 
 Codex 的行为：
 
-- 如果窗口已经在前台：最小化窗口
-- 如果窗口在后台或已最小化：恢复并激活窗口
-- 如果窗口还没打开：启动 Codex 应用
+- 如果窗口已经在前台：发送右上角关闭按钮动作，收进托盘
+- 如果窗口在后台：激活窗口
+- 如果窗口已在托盘或还没打开：启动 Codex 应用入口，把窗口唤回
 
 ## 使用前准备
 
@@ -88,6 +88,6 @@ shell:startup
 
 ## 说明
 
-这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；Codex 使用 `Codex.exe` 识别。
+这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；Codex 使用 `Codex.exe` 识别，并通过系统关闭按钮动作进入托盘。
 
 如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。
