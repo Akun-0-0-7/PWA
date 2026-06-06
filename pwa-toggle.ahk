@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; PWA one-key show/hide toggle for Google Gemini and ChatGPT.
+; One-key show/hide toggle for Google Gemini, ChatGPT, and Codex.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 
 DetectHiddenWindows(true)
@@ -13,10 +13,12 @@ Persistent(true)
 ; Example: "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
 geminiLaunchPath := ""
 chatgptLaunchPath := ""
+codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
 apps := []
-apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath))
-apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath))
+apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("Codex", "^!x", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 
 HiddenWindows := Map()
 
@@ -30,7 +32,11 @@ OnExit(ShowHiddenBeforeExit)
 
 return
 
-MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "") {
+MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", processNames := "", minimizeOnActive := false) {
+    if processNames = "" {
+        processNames := BrowserProcessNames()
+    }
+
     return {
         name: name,
         hotkey: hotkey,
@@ -38,7 +44,8 @@ MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "") {
         shortcutNames: shortcutNames,
         fallbackUrl: fallbackUrl,
         launchPath: launchPath,
-        processNames: BrowserProcessNames()
+        processNames: processNames,
+        minimizeOnActive: minimizeOnActive
     }
 }
 
@@ -62,6 +69,23 @@ ToggleApp(app, *) {
     hwnd := FindAppWindow(app)
     if hwnd {
         target := "ahk_id " hwnd
+        if app.minimizeOnActive {
+            if IsActiveApp(app) {
+                for _, appHwnd in FindAppWindows(app) {
+                    try WinMinimize("ahk_id " appHwnd)
+                }
+                return
+            }
+
+            for _, appHwnd in FindAppWindows(app) {
+                appTarget := "ahk_id " appHwnd
+                try WinShow(appTarget)
+                try WinRestore(appTarget)
+            }
+            WinActivate(target)
+            return
+        }
+
         if WinActive(target) {
             WinHide(target)
             HiddenWindows[hwnd] := true
@@ -83,6 +107,11 @@ ToggleApp(app, *) {
 
 FindAppWindow(app) {
     global HiddenWindows
+
+    activeHwnd := WinExist("A")
+    if activeHwnd && IsActiveApp(app) {
+        return activeHwnd
+    }
 
     matches := FindAppWindows(app)
     for _, hwnd in matches {
@@ -131,11 +160,28 @@ IsAppCandidate(hwnd, app) {
     }
 }
 
+TitleMatchesApp(hwnd, app) {
+    try {
+        title := WinGetTitle("ahk_id " hwnd)
+        for _, appTitle in app.titles {
+            if InStr(title, appTitle) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+IsActiveApp(app) {
+    activeHwnd := WinExist("A")
+    return activeHwnd && IsAppCandidate(activeHwnd, app) && TitleMatchesApp(activeHwnd, app)
+}
+
 RunApp(app) {
     launchTarget := ResolveLaunchTarget(app)
 
     if launchTarget != "" {
-        Run(Quote(launchTarget))
+        RunTarget(launchTarget)
     } else if app.fallbackUrl != "" {
         Run(app.fallbackUrl)
     } else {
@@ -153,6 +199,10 @@ RunApp(app) {
 }
 
 ResolveLaunchTarget(app) {
+    if IsShellTarget(app.launchPath) {
+        return app.launchPath
+    }
+
     if app.launchPath != "" && FileExist(app.launchPath) {
         return app.launchPath
     }
@@ -163,6 +213,18 @@ ResolveLaunchTarget(app) {
     }
 
     return ""
+}
+
+RunTarget(target) {
+    if IsShellTarget(target) {
+        Run(target)
+    } else {
+        Run(Quote(target))
+    }
+}
+
+IsShellTarget(target) {
+    return target != "" && InStr(StrLower(target), "shell:") = 1
 }
 
 FindShortcut(shortcutNames) {

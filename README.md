@@ -1,23 +1,31 @@
 # PWA 一键唤醒与隐藏
 
-这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 做“一键唤醒与隐藏”。
+这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 和桌面应用做“一键唤醒与隐藏/最小化”。
 
-当前内置两个应用：
+当前内置三个应用：
 
 - Google Gemini
 - ChatGPT中文
+- Codex
 
 ## 默认热键
 
 - `Ctrl + Alt + G`：Google Gemini
 - `Ctrl + Alt + C`：ChatGPT中文
+- `Ctrl + Alt + X`：Codex
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
-每个应用的行为都是：
+Gemini 和 ChatGPT 的行为：
 
 - 如果窗口已经在前台：隐藏窗口
 - 如果窗口在后台或已被隐藏：显示并激活窗口
 - 如果窗口还没打开：启动 PWA 快捷方式
+
+Codex 的行为：
+
+- 如果窗口已经在前台：最小化窗口
+- 如果窗口在后台或已最小化：恢复并激活窗口
+- 如果窗口还没打开：启动 Codex 应用
 
 ## 使用前准备
 
@@ -54,8 +62,9 @@ chatgptLaunchPath := "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu
 热键在脚本顶部这两行：
 
 ```ahk
-apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath))
-apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath))
+apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("Codex", "^!x", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 ```
 
 AutoHotkey 热键符号：
@@ -79,6 +88,6 @@ shell:startup
 
 ## 说明
 
-这个脚本使用窗口标题和浏览器进程名来识别 PWA 窗口，支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名。
+这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；Codex 使用 `Codex.exe` 识别。
 
 如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。
