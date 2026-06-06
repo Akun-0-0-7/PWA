@@ -18,7 +18,7 @@ codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
-apps.Push(MakeApp("Codex", "^!x", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
+apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 
 HiddenWindows := Map()
 

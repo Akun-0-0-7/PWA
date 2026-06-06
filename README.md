@@ -12,7 +12,7 @@
 
 - `Ctrl + Alt + G`：Google Gemini
 - `Ctrl + Alt + C`：ChatGPT中文
-- `Ctrl + Alt + X`：Codex
+- `Alt + C`：Codex
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
 Gemini 和 ChatGPT 的行为：
@@ -64,7 +64,7 @@ chatgptLaunchPath := "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu
 ```ahk
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
-apps.Push(MakeApp("Codex", "^!x", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
+apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 ```
 
 AutoHotkey 热键符号：
