@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; One-key show/hide toggle for Google Gemini, ChatGPT, and Codex.
+; One-key show/hide toggle for Google Gemini, ChatGPT, VS Code, and Codex.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 
 DetectHiddenWindows(true)
@@ -13,11 +13,13 @@ Persistent(true)
 ; Example: "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
 geminiLaunchPath := ""
 chatgptLaunchPath := ""
+vscodeLaunchPath := A_LocalAppData . "\Programs\Microsoft VS Code\Code.exe"
 codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
 apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
 apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 
 HiddenWindows := Map()
