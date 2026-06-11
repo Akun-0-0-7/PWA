@@ -13,7 +13,7 @@ Persistent(true)
 ; Example: "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
 geminiLaunchPath := ""
 chatgptLaunchPath := ""
-vscodeLaunchPath := A_LocalAppData . "\Programs\Microsoft VS Code\Code.exe"
+vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
 codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
 apps := []

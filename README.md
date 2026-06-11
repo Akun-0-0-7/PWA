@@ -60,6 +60,16 @@ chatgptLaunchPath := "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu
 2. 右键图标，选择“打开文件所在的位置”。
 3. 复制对应 `.lnk` 文件的完整路径。
 
+## 如果 VS Code 没有启动
+
+脚本会通过 `vscodeLaunchPath` 启动 VS Code。当前默认路径是：
+
+```ahk
+vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
+```
+
+如果你的 VS Code 安装在其他位置，请把这个路径改成实际的 `Code.exe` 路径。
+
 ## 修改热键
 
 热键在脚本顶部这些行：
