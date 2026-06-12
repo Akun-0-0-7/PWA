@@ -2,11 +2,12 @@
 
 这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 和桌面应用做“一键唤醒与隐藏/最小化”。
 
-当前内置四个应用：
+当前内置五个应用：
 
 - Google Gemini
 - ChatGPT中文
 - VS Code
+- Clash for Windows
 - Codex
 
 ## 默认热键
@@ -14,10 +15,11 @@
 - `Ctrl + Alt + G`：Google Gemini
 - `Ctrl + Alt + C`：ChatGPT中文
 - `Ctrl + Alt + V`：VS Code
+- `Ctrl + Shift + C`：Clash for Windows
 - `Alt + C`：Codex
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
-Gemini、ChatGPT 和 VS Code 的行为：
+Gemini、ChatGPT、VS Code 和 Clash for Windows 的行为：
 
 - 如果窗口已经在前台：隐藏窗口
 - 如果窗口在后台或已被隐藏：显示并激活窗口
@@ -70,6 +72,16 @@ vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
 
 如果你的 VS Code 安装在其他位置，请把这个路径改成实际的 `Code.exe` 路径。
 
+## 如果 Clash for Windows 没有启动
+
+脚本会通过 `clashLaunchPath` 启动 Clash for Windows。当前默认路径是：
+
+```ahk
+clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.exe"
+```
+
+如果你的 Clash for Windows 安装在其他位置，请把这个路径改成实际的 `Clash for Windows.exe` 路径。
+
 ## 修改热键
 
 热键在脚本顶部这些行：
@@ -78,6 +90,7 @@ vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
+apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false))
 apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 ```
 
@@ -102,6 +115,6 @@ shell:startup
 
 ## 说明
 
-这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；Codex 使用 `Codex.exe` 识别，并通过系统关闭按钮动作进入托盘。
+这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；Clash for Windows 使用 `Clash for Windows.exe` 识别；Codex 使用 `Codex.exe` 识别，并通过系统关闭按钮动作进入托盘。
 
 如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。
