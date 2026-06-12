@@ -1,6 +1,16 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
+; Relaunch elevated so hotkeys work when target apps run as administrator.
+if !A_IsAdmin {
+    try {
+        Run('*RunAs "' A_AhkPath '" "' A_ScriptFullPath '"')
+    } catch as err {
+        MsgBox("This script needs administrator permission to control elevated app windows.`n`n" err.Message)
+    }
+    ExitApp
+}
+
 ; One-key show/hide toggle for Google Gemini, ChatGPT, VS Code, Clash for Windows, and Codex.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 

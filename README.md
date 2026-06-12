@@ -37,6 +37,7 @@ Codex 的行为：
 2. 在 Chrome、Edge 或其他浏览器中把 Gemini 和 ChatGPT 安装为 PWA。
 3. 如需使用 VS Code 热键，请先安装 VS Code。
 4. 双击运行 `pwa-toggle.ahk`。
+5. 脚本会自动请求管理员权限，这样可以控制以管理员身份运行的 VS Code 等窗口。
 
 ## 如果打开成普通浏览器标签页
 
