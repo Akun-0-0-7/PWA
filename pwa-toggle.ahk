@@ -21,26 +21,29 @@ Persistent(true)
 
 ; Optional: paste the exact PWA shortcut path here if auto-detection opens a normal browser tab.
 ; Example: "C:\Users\akun\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Google Gemini.lnk"
-geminiLaunchPath := ""
-chatgptLaunchPath := ""
+geminiLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome 应用\Google Gemini.lnk"
+chatgptLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome 应用\ChatGPT 中文.lnk"
 vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
 clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.exe"
 codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
 apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
-apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
+apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT 中文.lnk", "ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false))
 apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 
 HiddenWindows := Map()
 
+OnMessage(0x007E, HandleDisplayChange) ; WM_DISPLAYCHANGE
+OnMessage(0x02E0, HandleDisplayChange) ; WM_DPICHANGED
+
 for _, app in apps {
     Hotkey(app.hotkey, ToggleApp.Bind(app), "On")
 }
 
-; Rescue key: show all windows managed by this script.
+; Rescue key: show and repair all windows managed by this script.
 Hotkey("^!r", ShowAllApps, "On")
 OnExit(ShowHiddenBeforeExit)
 
@@ -94,9 +97,7 @@ ToggleApp(app, *) {
             return
         }
 
-        WinShow(target)
-        try WinRestore(target)
-        WinActivate(target)
+        ActivateWindow(hwnd)
 
         if HiddenWindows.Has(hwnd) {
             HiddenWindows.Delete(hwnd)
@@ -229,10 +230,7 @@ RunApp(app) {
 
     hwnd := WaitForAppWindow(app, 10000)
     if hwnd {
-        target := "ahk_id " hwnd
-        WinShow(target)
-        try WinRestore(target)
-        WinActivate(target)
+        ActivateWindow(hwnd)
     }
 }
 
@@ -271,6 +269,7 @@ FindShortcut(shortcutNames) {
     publicDesktop := EnvGet("Public") . "\Desktop"
 
     exactFolders := [
+        userPrograms . "\Chrome 应用",
         userPrograms . "\Chrome Apps",
         userPrograms . "\Microsoft Edge Apps",
         userPrograms,
@@ -339,11 +338,133 @@ WaitForVisibleAppWindow(app, timeoutMs) {
     return 0
 }
 
+HandleDisplayChange(*) {
+    SetTimer(RepairManagedWindows, -800)
+}
+
+RepairManagedWindows(*) {
+    global apps
+
+    for _, app in apps {
+        for _, hwnd in FindAppWindows(app) {
+            if IsWindowVisible(hwnd) {
+                RepairWindowForCurrentDisplays(hwnd)
+                ForceWindowLayoutRefresh(hwnd)
+            }
+        }
+    }
+}
+
 ActivateWindow(hwnd) {
     target := "ahk_id " hwnd
     try WinShow(target)
-    try WinRestore(target)
+    RestoreIfMinimized(hwnd)
+    RepairWindowForCurrentDisplays(hwnd)
+    ForceWindowLayoutRefresh(hwnd)
     WinActivate(target)
+}
+
+RestoreIfMinimized(hwnd) {
+    target := "ahk_id " hwnd
+    try {
+        if (WinGetMinMax(target) = -1) {
+            WinRestore(target)
+        }
+    }
+}
+
+RepairWindowForCurrentDisplays(hwnd) {
+    target := "ahk_id " hwnd
+
+    try {
+        if (WinGetMinMax(target) = 1) {
+            return
+        }
+
+        WinGetPos(&x, &y, &width, &height, target)
+    } catch {
+        return
+    }
+
+    if (width <= 0 || height <= 0) {
+        return
+    }
+
+    overlapArea := 0
+    monitorIndex := GetBestMonitorForRect(x, y, width, height, &overlapArea)
+
+    try MonitorGetWorkArea(monitorIndex, &left, &top, &right, &bottom)
+    catch {
+        return
+    }
+
+    workWidth := right - left
+    workHeight := bottom - top
+    if (workWidth <= 0 || workHeight <= 0) {
+        return
+    }
+
+    windowArea := width * height
+    visibleThreshold := Min(windowArea, workWidth * workHeight) * 0.2
+    offScreen := overlapArea < visibleThreshold
+    tooSmall := width < 360 || height < 260
+    tooLarge := width > workWidth * 1.25 || height > workHeight * 1.25
+
+    if !(offScreen || tooSmall || tooLarge) {
+        return
+    }
+
+    newWidth := Min(Max(width, Min(1200, workWidth)), workWidth)
+    newHeight := Min(Max(height, Min(800, workHeight)), workHeight)
+
+    if (tooSmall || width > workWidth * 1.25) {
+        newWidth := Min(Round(workWidth * 0.82), workWidth)
+    }
+    if (tooSmall || height > workHeight * 1.25) {
+        newHeight := Min(Round(workHeight * 0.82), workHeight)
+    }
+
+    newX := left + Round((workWidth - newWidth) / 2)
+    newY := top + Round((workHeight - newHeight) / 2)
+    try WinMove(newX, newY, newWidth, newHeight, target)
+}
+
+GetBestMonitorForRect(x, y, width, height, &bestArea) {
+    bestIndex := 1
+    bestArea := -1
+    rectRight := x + width
+    rectBottom := y + height
+
+    Loop MonitorGetCount() {
+        MonitorGetWorkArea(A_Index, &left, &top, &right, &bottom)
+        overlapWidth := Max(0, Min(rectRight, right) - Max(x, left))
+        overlapHeight := Max(0, Min(rectBottom, bottom) - Max(y, top))
+        area := overlapWidth * overlapHeight
+
+        if (area > bestArea) {
+            bestArea := area
+            bestIndex := A_Index
+        }
+    }
+
+    return bestIndex
+}
+
+ForceWindowLayoutRefresh(hwnd) {
+    target := "ahk_id " hwnd
+
+    try WinGetPos(&x, &y, &width, &height, target)
+    catch {
+        return
+    }
+
+    flags := 0x0001 | 0x0002 | 0x0004 | 0x0010 | 0x0020
+    DllCall("SetWindowPos", "Ptr", hwnd, "Ptr", 0, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", flags)
+    try WinRedraw(target)
+    DllCall("RedrawWindow", "Ptr", hwnd, "Ptr", 0, "Ptr", 0, "UInt", 0x0001 | 0x0080 | 0x0100 | 0x0400)
+
+    sizeParam := ((height & 0xFFFF) << 16) | (width & 0xFFFF)
+    try PostMessage(0x0005, 0, sizeParam, "", target)
 }
 
 SendCloseButton(hwnd) {
@@ -361,7 +482,9 @@ ShowAllApps(*) {
         for _, hwnd in FindAppWindows(app) {
             target := "ahk_id " hwnd
             try WinShow(target)
-            try WinRestore(target)
+            RestoreIfMinimized(hwnd)
+            RepairWindowForCurrentDisplays(hwnd)
+            ForceWindowLayoutRefresh(hwnd)
             if HiddenWindows.Has(hwnd) {
                 HiddenWindows.Delete(hwnd)
             }
