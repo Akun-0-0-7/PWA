@@ -31,7 +31,7 @@ apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT 中文.lnk", "ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
-apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false))
+apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
 apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 
 HiddenWindows := Map()
@@ -49,7 +49,7 @@ OnExit(ShowHiddenBeforeExit)
 
 return
 
-MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", processNames := "", closeToTray := false) {
+MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", processNames := "", closeToTray := false, restoreByLaunch := false) {
     if processNames = "" {
         processNames := BrowserProcessNames()
     }
@@ -62,7 +62,8 @@ MakeApp(name, hotkey, titles, shortcutNames, fallbackUrl, launchPath := "", proc
         fallbackUrl: fallbackUrl,
         launchPath: launchPath,
         processNames: processNames,
-        closeToTray: closeToTray
+        closeToTray: closeToTray,
+        restoreByLaunch: restoreByLaunch
     }
 }
 
@@ -88,6 +89,11 @@ ToggleApp(app, *) {
         return
     }
 
+    if app.restoreByLaunch {
+        ToggleRestoreByLaunchApp(app)
+        return
+    }
+
     hwnd := FindAppWindow(app)
     if hwnd {
         target := "ahk_id " hwnd
@@ -106,6 +112,42 @@ ToggleApp(app, *) {
     }
 
     RunApp(app)
+}
+
+ToggleRestoreByLaunchApp(app) {
+    global HiddenWindows
+
+    if IsActiveApp(app) {
+        activeHwnd := WinExist("A")
+        WinHide("ahk_id " activeHwnd)
+        HiddenWindows[activeHwnd] := true
+        return
+    }
+
+    hwnd := FindVisibleAppWindow(app)
+    if hwnd {
+        ActivateWindow(hwnd)
+        if HiddenWindows.Has(hwnd) {
+            HiddenWindows.Delete(hwnd)
+        }
+        return
+    }
+
+    launchTarget := ResolveLaunchTarget(app)
+    if launchTarget != "" {
+        RunTarget(launchTarget)
+        hwnd := WaitForVisibleAppWindow(app, 12000)
+        if hwnd {
+            Sleep(400)
+            ActivateWindow(hwnd)
+            if HiddenWindows.Has(hwnd) {
+                HiddenWindows.Delete(hwnd)
+            }
+        }
+        return
+    }
+
+    MsgBox("No launcher was found for " app.name ". Edit launchPath in this script.")
 }
 
 ToggleCloseToTrayApp(app) {
