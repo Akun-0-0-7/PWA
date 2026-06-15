@@ -35,9 +35,10 @@ Codex 的行为：
 
 1. 安装 [AutoHotkey v2](https://www.autohotkey.com/)。
 2. 在 Chrome、Edge 或其他浏览器中把 Gemini 和 ChatGPT 安装为 PWA。
-3. 如需使用 VS Code 热键，请先安装 VS Code。
+3. 如需使用 VS Code 或 Clash for Windows 热键，请先安装对应应用。
 4. 双击运行 `pwa-toggle.ahk`。
 5. 脚本会自动请求管理员权限，这样可以控制以管理员身份运行的 VS Code 等窗口。
+6. 如需开机自动运行且不想每次开机弹权限确认，请运行一次 `install-startup-task.ps1`。
 
 ## 如果打开成普通浏览器标签页
 
@@ -91,7 +92,7 @@ clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.ex
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
-apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false))
+apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
 apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
 ```
 
@@ -106,13 +107,15 @@ AutoHotkey 热键符号：
 
 ## 开机自动运行
 
-按 `Win + R`，输入：
+运行一次安装脚本：
 
-```text
-shell:startup
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-startup-task.ps1
 ```
 
-把 `pwa-toggle.ahk` 的快捷方式放到打开的文件夹里。
+它会请求一次管理员权限，创建名为 `PWA Toggle Hotkeys` 的计划任务，并在登录时以最高权限启动 `pwa-toggle.ahk`。这样脚本仍然能控制管理员权限运行的窗口，但开机时不会每次弹权限确认。
+
+安装脚本也会清理启动文件夹里指向 `pwa-toggle.ahk` 的旧快捷方式。不要再把脚本快捷方式放回 `shell:startup`，否则开机时仍会从普通权限启动并再次请求管理员权限。
 
 ## 说明
 
