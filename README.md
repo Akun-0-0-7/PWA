@@ -5,31 +5,31 @@
 当前内置五个应用：
 
 - Google Gemini
-- ChatGPT中文
+- ChatGPT 中文（PWA）
 - VS Code
 - Clash for Windows
-- Codex
+- ChatGPT（桌面版，原 Codex）
 
 ## 默认热键
 
 - `Ctrl + Alt + G`：Google Gemini
-- `Ctrl + Alt + C`：ChatGPT中文
+- `Ctrl + Alt + C`：ChatGPT 中文 PWA
 - `Ctrl + Alt + V`：VS Code
 - `Ctrl + Shift + C`：Clash for Windows
-- `Alt + C`：Codex
+- `Alt + C`：ChatGPT 桌面版
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
-Gemini、ChatGPT、VS Code 和 Clash for Windows 的行为：
+Gemini、ChatGPT 中文 PWA、VS Code 和 Clash for Windows 的行为：
 
 - 如果窗口已经在前台：隐藏窗口
 - 如果窗口在后台或已被隐藏：显示并激活窗口
 - 如果窗口还没打开：启动对应快捷方式或程序入口
 
-Codex 的行为：
+ChatGPT 桌面版的行为：
 
 - 如果窗口已经在前台：发送右上角关闭按钮动作，收进托盘
 - 如果窗口在后台：激活窗口
-- 如果窗口已在托盘或还没打开：启动 Codex 应用入口，把窗口唤回
+- 如果窗口已在托盘或还没打开：启动 ChatGPT 应用入口，把窗口唤回
 
 ## 使用前准备
 
@@ -93,7 +93,7 @@ apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google 
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
-apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
+apps.Push(MakeApp("ChatGPT", "!c", ["ChatGPT"], ["ChatGPT.lnk", "Codex.lnk"], "", chatgptDesktopLaunchPath, ["ChatGPT.exe"], true))
 ```
 
 AutoHotkey 热键符号：
@@ -119,6 +119,6 @@ powershell -ExecutionPolicy Bypass -File .\install-startup-task.ps1
 
 ## 说明
 
-这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；Clash for Windows 使用 `Clash for Windows.exe` 识别；Codex 使用 `Codex.exe` 识别，并通过系统关闭按钮动作进入托盘。
+这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；Clash for Windows 使用 `Clash for Windows.exe` 识别；ChatGPT 桌面版使用 `ChatGPT.exe` 识别，并通过系统关闭按钮动作进入托盘。
 
 如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。

@@ -11,7 +11,7 @@ if !A_IsAdmin {
     ExitApp
 }
 
-; One-key show/hide toggle for Google Gemini, ChatGPT, VS Code, Clash for Windows, and Codex.
+; One-key show/hide toggle for Google Gemini, ChatGPT PWA, VS Code, Clash for Windows, and ChatGPT desktop.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 
 DetectHiddenWindows(true)
@@ -25,14 +25,14 @@ geminiLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome �
 chatgptLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome 应用\ChatGPT 中文.lnk"
 vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
 clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.exe"
-codexLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
+chatgptDesktopLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
 apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT 中文.lnk", "ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
-apps.Push(MakeApp("Codex", "!c", ["Codex"], ["Codex.lnk"], "", codexLaunchPath, ["Codex.exe"], true))
+apps.Push(MakeApp("ChatGPT", "!c", ["ChatGPT"], ["ChatGPT.lnk", "Codex.lnk"], "", chatgptDesktopLaunchPath, ["ChatGPT.exe"], true))
 
 HiddenWindows := Map()
 
