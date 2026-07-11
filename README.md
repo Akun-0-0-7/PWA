@@ -2,11 +2,12 @@
 
 这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 和桌面应用做“一键唤醒与隐藏/最小化”。
 
-当前内置五个应用：
+当前内置六个应用：
 
 - Google Gemini
 - ChatGPT 中文（PWA）
 - VS Code
+- 抖音
 - Clash for Windows
 - ChatGPT（桌面版，原 Codex）
 
@@ -15,11 +16,12 @@
 - `Ctrl + Alt + G`：Google Gemini
 - `Ctrl + Alt + C`：ChatGPT 中文 PWA
 - `Ctrl + Alt + V`：VS Code
+- `Ctrl + Alt + D`：抖音
 - `Ctrl + Shift + C`：Clash for Windows
 - `Alt + C`：ChatGPT 桌面版
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
-Gemini、ChatGPT 中文 PWA、VS Code 和 Clash for Windows 的行为：
+Gemini、ChatGPT 中文 PWA、VS Code、抖音和 Clash for Windows 的行为：
 
 - 如果窗口已经在前台：隐藏窗口
 - 如果窗口在后台或已被隐藏：显示并激活窗口
@@ -92,6 +94,7 @@ clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.ex
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
+apps.Push(MakeApp("抖音", "^!d", ["抖音", "Douyin"], ["抖音.lnk", "Douyin.lnk"], "", "", ["douyin.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
 apps.Push(MakeApp("ChatGPT", "!c", ["ChatGPT"], ["ChatGPT.lnk", "Codex.lnk"], "", chatgptDesktopLaunchPath, ["ChatGPT.exe"], true))
 ```
@@ -119,6 +122,6 @@ powershell -ExecutionPolicy Bypass -File .\install-startup-task.ps1
 
 ## 说明
 
-这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；Clash for Windows 使用 `Clash for Windows.exe` 识别；ChatGPT 桌面版使用 `ChatGPT.exe` 识别，并通过系统关闭按钮动作进入托盘。
+这个脚本使用窗口标题和进程名来识别窗口。PWA 支持 Chrome、Edge、Brave、Vivaldi、Opera 和 Firefox 的常见进程名；VS Code 使用 `Code.exe` 识别；抖音使用 `douyin.exe` 识别；Clash for Windows 使用 `Clash for Windows.exe` 识别；ChatGPT 桌面版使用 `ChatGPT.exe` 识别，并通过系统关闭按钮动作进入托盘。
 
 如果你误隐藏了窗口，可以按 `Ctrl + Alt + R` 恢复。退出脚本时，它也会尽量自动恢复被隐藏的窗口。

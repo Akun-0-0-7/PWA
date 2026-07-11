@@ -11,7 +11,7 @@ if !A_IsAdmin {
     ExitApp
 }
 
-; One-key show/hide toggle for Google Gemini, ChatGPT PWA, VS Code, Clash for Windows, and ChatGPT desktop.
+; One-key show/hide toggle for Google Gemini, ChatGPT PWA, VS Code, Douyin, Clash for Windows, and ChatGPT desktop.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 
 DetectHiddenWindows(true)
@@ -31,6 +31,7 @@ apps := []
 apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google Gemini.lnk", "Gemini.lnk"], "https://gemini.google.com/app", geminiLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT 中文.lnk", "ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
+apps.Push(MakeApp("抖音", "^!d", ["抖音", "Douyin"], ["抖音.lnk", "Douyin.lnk"], "", "", ["douyin.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
 apps.Push(MakeApp("ChatGPT", "!c", ["ChatGPT"], ["ChatGPT.lnk", "Codex.lnk"], "", chatgptDesktopLaunchPath, ["ChatGPT.exe"], true))
 
