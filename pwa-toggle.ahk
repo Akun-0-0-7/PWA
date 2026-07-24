@@ -1,5 +1,6 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#UseHook True
 
 ; Relaunch elevated so hotkeys work when target apps run as administrator.
 if !A_IsAdmin {
@@ -11,7 +12,7 @@ if !A_IsAdmin {
     ExitApp
 }
 
-; One-key show/hide toggle for Google Gemini, ChatGPT PWA, VS Code, Douyin, Clash for Windows, and ChatGPT desktop.
+; One-key show/hide toggle for Gemini, ChatGPT PWA, VS Code, Douyin, WeChat, QQ, Clash, and ChatGPT desktop.
 ; Hotkey syntax: ^ = Ctrl, ! = Alt, # = Win, + = Shift.
 
 DetectHiddenWindows(true)
@@ -24,6 +25,8 @@ Persistent(true)
 geminiLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome 应用\Google Gemini.lnk"
 chatgptLaunchPath := A_AppData . "\Microsoft\Windows\Start Menu\Programs\Chrome 应用\ChatGPT 中文.lnk"
 vscodeLaunchPath := "D:\tool\encoder\Microsoft VS Code\Code.exe"
+wechatLaunchPath := "D:\tool\social media\Weixin\Weixin.exe"
+qqLaunchPath := "D:\tool\social media\QQ\QQ.exe"
 clashLaunchPath := "D:\tool\cross network\Clash for Windows\Clash for Windows.exe"
 chatgptDesktopLaunchPath := "shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App"
 
@@ -32,6 +35,8 @@ apps.Push(MakeApp("Google Gemini", "^!g", ["Google Gemini", "Gemini"], ["Google 
 apps.Push(MakeApp("ChatGPT中文", "^!c", ["ChatGPT中文", "ChatGPT"], ["ChatGPT 中文.lnk", "ChatGPT中文.lnk", "ChatGPT.lnk"], "https://chatgpt.com/", chatgptLaunchPath, BrowserProcessNames(), false))
 apps.Push(MakeApp("VS Code", "^!v", ["Visual Studio Code", "VS Code"], ["Visual Studio Code.lnk", "VS Code.lnk", "Code.lnk"], "", vscodeLaunchPath, ["Code.exe"], false))
 apps.Push(MakeApp("抖音", "^!d", ["抖音", "Douyin"], ["抖音.lnk", "Douyin.lnk"], "", "", ["douyin.exe"], false))
+apps.Push(MakeApp("WeChat", "^!w", ["微信", "WeChat", "Weixin"], ["微信.lnk", "WeChat.lnk", "Weixin.lnk"], "", wechatLaunchPath, ["Weixin.exe"], false))
+apps.Push(MakeApp("QQ", "^!z", ["QQ"], ["QQ.lnk"], "", qqLaunchPath, ["QQ.exe"], false))
 apps.Push(MakeApp("Clash for Windows", "^+c", ["Clash for Windows", "Clash"], ["Clash for Windows.lnk", "Clash.lnk"], "", clashLaunchPath, ["Clash for Windows.exe"], false, true))
 apps.Push(MakeApp("ChatGPT", "!c", ["ChatGPT"], ["ChatGPT.lnk", "Codex.lnk"], "", chatgptDesktopLaunchPath, ["ChatGPT.exe"], true))
 

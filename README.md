@@ -2,12 +2,14 @@
 
 这是一个 AutoHotkey v2 脚本，用来给网页应用/PWA 和桌面应用做“一键唤醒与隐藏/最小化”。
 
-当前内置六个应用：
+当前内置八个应用：
 
 - Google Gemini
 - ChatGPT 中文（PWA）
 - VS Code
 - 抖音
+- 微信
+- QQ
 - Clash for Windows
 - ChatGPT（桌面版，原 Codex）
 
@@ -17,11 +19,13 @@
 - `Ctrl + Alt + C`：ChatGPT 中文 PWA
 - `Ctrl + Alt + V`：VS Code
 - `Ctrl + Alt + D`：抖音
+- `Ctrl + Alt + W`：微信
+- `Ctrl + Alt + Z`：QQ
 - `Ctrl + Shift + C`：Clash for Windows
 - `Alt + C`：ChatGPT 桌面版
 - `Ctrl + Alt + R`：救援键，重新显示被脚本隐藏的窗口
 
-Gemini、ChatGPT 中文 PWA、VS Code、抖音和 Clash for Windows 的行为：
+Gemini、ChatGPT 中文 PWA、VS Code、抖音、微信、QQ 和 Clash for Windows 的行为：
 
 - 如果窗口已经在前台：隐藏窗口
 - 如果窗口在后台或已被隐藏：显示并激活窗口
@@ -37,7 +41,7 @@ ChatGPT 桌面版的行为：
 
 1. 安装 [AutoHotkey v2](https://www.autohotkey.com/)。
 2. 在 Chrome、Edge 或其他浏览器中把 Gemini 和 ChatGPT 安装为 PWA。
-3. 如需使用 VS Code 或 Clash for Windows 热键，请先安装对应应用。
+3. 如需使用 VS Code、微信、QQ 或 Clash for Windows 热键，请先安装对应应用。
 4. 双击运行 `pwa-toggle.ahk`。
 5. 脚本会自动请求管理员权限，这样可以控制以管理员身份运行的 VS Code 等窗口。
 6. 如需开机自动运行且不想每次开机弹权限确认，请运行一次 `install-startup-task.ps1`。
