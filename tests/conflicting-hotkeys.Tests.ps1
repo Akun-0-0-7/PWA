@@ -7,21 +7,28 @@ if ($scriptContent -notmatch '(?m)^#UseHook\s+True\s*$') {
     throw "Keyboard-hook hotkeys are not enabled"
 }
 
-if ($scriptContent -notmatch 'MakeApp\(.*"\^!w".*"Weixin\.exe"') {
-    throw "WeChat Ctrl+Alt+W rule missing"
+if ($scriptContent -match 'MakeApp\(.*"\^!w".*"Weixin\.exe"') {
+    throw "WeChat Ctrl+Alt+W must be left to WeChat"
 }
 
-if ($scriptContent -notmatch 'MakeApp\(.*"\^!z".*"QQ\.exe"') {
-    throw "QQ Ctrl+Alt+Z rule missing"
+if ($scriptContent -match 'MakeApp\(.*"\^!z".*"QQ\.exe"') {
+    throw "QQ Ctrl+Alt+Z must be left to QQ"
 }
 
 foreach ($shortcut in @(
-    'Ctrl \+ Alt \+ W',
-    'Ctrl \+ Alt \+ Z',
     'Ctrl \+ Alt \+ C',
     'Alt \+ C'
 )) {
     if ($readme -notmatch $shortcut) {
         throw "Shortcut documentation missing: $shortcut"
+    }
+}
+
+foreach ($shortcut in @(
+    'Ctrl \+ Alt \+ W',
+    'Ctrl \+ Alt \+ Z'
+)) {
+    if ($readme -match $shortcut) {
+        throw "Shortcut documentation must be removed: $shortcut"
     }
 }
